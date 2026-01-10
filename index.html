@@ -2648,10 +2648,23 @@
                 // PERO SOLO en modo individual, NO en MultiCups
                 const isMultiCupsMode = currentTariffType === 'MULTICUPS';
                 
-                if (!isMultiCupsMode && availableOffers.length > 1) {
-                    console.log('Showing decision modal with', availableOffers.length, 'offers');
+                // DEBUG: Logs para entender por qué no se muestra el modal
+                console.log('🔍 DEBUG MODAL:');
+                console.log('  - isMultiCupsMode:', isMultiCupsMode);
+                console.log('  - currentTariffType:', currentTariffType);
+                console.log('  - availableOffers.length:', availableOffers.length);
+                console.log('  - availableOffers:', availableOffers);
+                console.log('  - Condition (!isMultiCupsMode && availableOffers.length >= 1):', !isMultiCupsMode && availableOffers.length >= 1);
+                
+                // CAMBIO: Mostrar modal SIEMPRE que haya ofertas (>= 1) para que el comercial pueda elegir
+                if (!isMultiCupsMode && availableOffers.length >= 1) {
+                    console.log('✅ MOSTRANDO MODAL DE DECISIÓN con', availableOffers.length, 'ofertas');
                     showOfferDecisionModal();
                     return; // No mostrar resultados todavía, esperar decisión del usuario
+                } else {
+                    console.log('⚠️ NO SE MUESTRA MODAL. Razones:');
+                    if (isMultiCupsMode) console.log('  - Es modo MultiCups');
+                    if (availableOffers.length < 1) console.log('  - No hay ofertas disponibles (<1)');
                 }
                 
                 // Si es MultiCups, solo hay 1 oferta, o ninguna, mostrar resultados directamente
@@ -10196,17 +10209,19 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
         // --- NUEVO: Modal de Decisión (Mejor vs Elegir) ---
         
         function showOfferDecisionModal() {
-            // SIMPLIFICADO: En lugar de mostrar el modal, ejecutar directamente la mejor opción con tarifa FIJA
-            console.log('Auto-ejecutando mejor opción con tarifa FIJA (saltando modal de decisión)');
+            console.log('🎯 MOSTRANDO MODAL DE DECISIÓN (VER MEJOR vs ELEGIR RESULTADOS)');
             
             // Ocultar loading
             document.getElementById('loading-status').classList.add('hidden');
             
-            // Configurar tarifa FIJA
-            bestOptionTariffChoice = 'fija';
+            // Obtener el modal
+            const modal = document.getElementById('offer-decision-modal');
             
-            // Ejecutar directamente la mejor opción
-            selectBestOptionDirect();
+            // MOSTRAR EL MODAL
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            console.log('✅ Modal de decisión mostrado correctamente');
         }
         
         function closeOfferDecisionModal() {
@@ -10219,12 +10234,22 @@ Destinatarios: F.araujo@drk.es, rguerra@drk.es, l.grande@drk.es
             const selectorDiv = document.getElementById('best-option-tariff-selector');
             const checkboxContainer = document.getElementById('powercup-indexed-comparison-checkbox');
             
-            // SIMPLIFICADO: Siempre seleccionar TARIFA FIJA y ejecutar directamente
-            console.log('Auto-seleccionando TARIFA FIJA y ejecutando directamente');
-            bestOptionTariffChoice = 'fija'; // Forzar tarifa FIJA
-            selectorDiv?.classList.add('hidden'); // Ocultar selector
-            if (checkboxContainer) checkboxContainer.classList.add('hidden'); // Ocultar checkbox
-            selectBestOptionDirect(); // Ejecutar directamente con tarifa FIJA
+            // Si es DRK Individual Y tiene tarifa indexada, mostrar selector
+            const isDrkIndividual = comparisonMode === 'drk_only' && currentTariffType !== 'MULTICUPS';
+            const hasIndexed = lastIndexedResult && lastIndexedResult.totalAnnual > 0;
+            
+            if (isDrkIndividual && hasIndexed) {
+                console.log('Mostrando selector de tipo de tarifa (FIJA vs INDEXADA)');
+                selectorDiv.classList.remove('hidden');
+                if (checkboxContainer) checkboxContainer.classList.add('hidden');
+            } else {
+                // POWER CUP o no hay indexada: ejecutar directamente con FIJA
+                console.log('Ejecutando directamente con TARIFA FIJA');
+                bestOptionTariffChoice = 'fija';
+                selectorDiv.classList.add('hidden');
+                if (checkboxContainer) checkboxContainer.classList.add('hidden');
+                selectBestOptionDirect();
+            }
         }
         
         // NUEVA: Actualizar elección de tipo de tarifa
