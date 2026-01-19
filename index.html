@@ -2731,27 +2731,38 @@
         window.resetToLanding = function() {
             console.log('🔄 resetToLanding llamada - Versión 2.0TD Directa');
             
-            // Ocultar la vista de resultados antes de recargar
-            const resultsView = document.getElementById('results-view');
-            if (resultsView) {
-                resultsView.classList.add('hidden');
-            }
-            
-            // Ocultar cualquier otra vista visible
-            const initialView = document.getElementById('initial-view');
-            if (initialView) {
-                initialView.classList.add('hidden');
-            }
-            
             // Detener el scanner si está activo
             if (typeof stopScanner === 'function') {
                 stopScanner();
             }
             
-            // Pequeño delay antes de recargar para que se vean los cambios
-            setTimeout(() => {
-                location.reload();
-            }, 100);
+            // Limpiar variables globales
+            lastComparisonResult = null;
+            lastIndexedResult = null;
+            availableOffers = [];
+            manuallySelectedOffer = null;
+            compareWithIndexed = false;
+            
+            // Ocultar TODAS las vistas
+            document.getElementById('results-view')?.classList.add('hidden');
+            document.getElementById('scanner-view')?.classList.add('hidden');
+            document.getElementById('manual-input-modal')?.classList.add('hidden');
+            document.getElementById('manual-input-modal')?.classList.remove('flex');
+            document.getElementById('landing-view')?.classList.add('hidden');
+            document.getElementById('multicups-saga-view')?.classList.add('hidden');
+            
+            // Limpiar los inputs manuales
+            if (typeof clearManualInputs === 'function') {
+                clearManualInputs();
+            }
+            
+            // Mostrar la vista inicial de 2.0TD
+            document.getElementById('initial-view')?.classList.remove('hidden');
+            
+            // Resetear el badge de tarifas
+            document.getElementById('tariff-display-badge').textContent = '0';
+            
+            console.log('✅ Vuelto a initial-view (2.0TD)');
         };
         
         // NUEVA FUNCIÓN: Volver desde initial-view SIN hacer reset completo
