@@ -2731,9 +2731,27 @@
         window.resetToLanding = function() {
             console.log('🔄 resetToLanding llamada - Versión 2.0TD Directa');
             
-            // En la versión directa de 2.0TD, simplemente recargamos la página
-            // Esto reiniciará la app directamente en 2.0TD
-            location.reload();
+            // Ocultar la vista de resultados antes de recargar
+            const resultsView = document.getElementById('results-view');
+            if (resultsView) {
+                resultsView.classList.add('hidden');
+            }
+            
+            // Ocultar cualquier otra vista visible
+            const initialView = document.getElementById('initial-view');
+            if (initialView) {
+                initialView.classList.add('hidden');
+            }
+            
+            // Detener el scanner si está activo
+            if (typeof stopScanner === 'function') {
+                stopScanner();
+            }
+            
+            // Pequeño delay antes de recargar para que se vean los cambios
+            setTimeout(() => {
+                location.reload();
+            }, 100);
         };
         
         // NUEVA FUNCIÓN: Volver desde initial-view SIN hacer reset completo
