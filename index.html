@@ -2742,27 +2742,29 @@
             availableOffers = [];
             manuallySelectedOffer = null;
             compareWithIndexed = false;
+            currentTariffType = null;
             
-            // Ocultar TODAS las vistas
+            // Ocultar TODAS las vistas primero
             document.getElementById('results-view')?.classList.add('hidden');
             document.getElementById('scanner-view')?.classList.add('hidden');
             document.getElementById('manual-input-modal')?.classList.add('hidden');
             document.getElementById('manual-input-modal')?.classList.remove('flex');
             document.getElementById('landing-view')?.classList.add('hidden');
             document.getElementById('multicups-saga-view')?.classList.add('hidden');
+            document.getElementById('initial-view')?.classList.add('hidden');
             
             // Limpiar los inputs manuales
             if (typeof clearManualInputs === 'function') {
                 clearManualInputs();
             }
             
-            // Mostrar la vista inicial de 2.0TD
-            document.getElementById('initial-view')?.classList.remove('hidden');
+            // Volver a inicializar 2.0TD
+            setTimeout(() => {
+                console.log('🚀 Re-iniciando en 2.0TD...');
+                selectTariffType('2.0TD');
+            }, 50);
             
-            // Resetear el badge de tarifas
-            document.getElementById('tariff-display-badge').textContent = '0';
-            
-            console.log('✅ Vuelto a initial-view (2.0TD)');
+            console.log('✅ Reset completado - reiniciando 2.0TD');
         };
         
         // NUEVA FUNCIÓN: Volver desde initial-view SIN hacer reset completo
